@@ -73,6 +73,8 @@ namespace MatchGame
                 gameEmoji.Add(animalEmoji[index]);
                 animalEmoji.RemoveAt(index);
             }
+
+            timeTextBlock.Text = "To start click on a ?";
         }
 
 
