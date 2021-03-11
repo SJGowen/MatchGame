@@ -68,7 +68,7 @@ namespace MatchGame
 
             foreach (var textBlock in mainGrid.Children.OfType<TextBlock>().Where(x => x.Name == ""))
             {
-                textBlock.Text ="?";
+                textBlock.Text ="❓";
                 int index = random.Next(animalEmoji.Count);
                 gameEmoji.Add(animalEmoji[index]);
                 animalEmoji.RemoveAt(index);
@@ -92,7 +92,7 @@ namespace MatchGame
             ProcessTimerEvents();
             TextBlock textBlock = sender as TextBlock;
 
-            if (textBlock.Text == "?")
+            if (textBlock.Text == "❓")
             {
                 var pos = int.Parse(textBlock.Tag.ToString());
                 string emojiClicked = gameEmoji[pos];
@@ -136,8 +136,8 @@ namespace MatchGame
             if (delay.IsEnabled)
             {
                 delay.Stop();
-                findingMatchFalseClicked.Text = displayMatch ? "✔" : "?";
-                findingMatchTrueClicked.Text = displayMatch ? "✔" : "?";
+                findingMatchFalseClicked.Text = displayMatch ? "✔" : "❓";
+                findingMatchTrueClicked.Text = displayMatch ? "✔" : "❓";
             }
         }
 
