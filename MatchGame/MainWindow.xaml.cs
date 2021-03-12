@@ -19,6 +19,7 @@ namespace MatchGame
         private int matchesFound;
         private bool displayMatch = false;
         private bool findingMatch = false;
+        private int cellsToGuess = 10;
 
 
         public MainWindow()
@@ -37,7 +38,7 @@ namespace MatchGame
         {
             tenthsOfSecondsElapsed++;
             timeTextBlock.Text = (tenthsOfSecondsElapsed / 10F).ToString("0.0s");
-            if (matchesFound == 8)
+            if (matchesFound == cellsToGuess)
             {
                 timer.Stop();
                 timeTextBlock.Text += " - Play Again?";
@@ -61,7 +62,9 @@ namespace MatchGame
                 "🐷", "🐷",
                 "🙉", "🙉",
                 "🦈", "🦈",
-                "🦊", "🦊"
+                "🦊", "🦊",
+                "🐒", "🐒",
+                "🦍", "🦍"
             };
 
             Random random = new();
@@ -143,7 +146,7 @@ namespace MatchGame
 
         private void TimeTextBlock_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (matchesFound == 8)
+            if (matchesFound == cellsToGuess)
             {
                 timer.Stop();
                 SetUpGame();
