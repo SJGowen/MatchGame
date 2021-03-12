@@ -3,17 +3,21 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"
         xmlns:local="clr-namespace:MatchGame"
         mc:Ignorable="d"
-        Title="Find all of the matching animals" Height="450" Width="500">
-    <Grid x:Name="mainGrid">
+        ResizeMode="NoResize"
+        Title="Find all of the matching animals!" Height="450" Width="500">
+    <Grid x:Name="mainGrid">                                    
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width=".3*"/>
             <ColumnDefinition/>
             <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
+            <ColumnDefinition/>                                 
+            <ColumnDefinition/>                                 
+            <ColumnDefinition/>                                 
+            <ColumnDefinition Width=".3*"/>                                 
+        </Grid.ColumnDefinitions>                               
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition/>
@@ -21,26 +25,26 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Column="0" HorizontalAlignment="Center" Grid.Row="0" Text="?" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="0"/>
-        <TextBlock Grid.Column="1" HorizontalAlignment="Center" Grid.Row="0" Text="?" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="1"/>
-        <TextBlock Grid.Column="2" HorizontalAlignment="Center" Grid.Row="0" Text="?" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="2"/>
-        <TextBlock Grid.Column="3" HorizontalAlignment="Center" Grid.Row="0" Text="?" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="3"/>
-        <TextBlock Grid.Column="4" HorizontalAlignment="Center" Grid.Row="0" Text="?" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="4"/>
-        <TextBlock Grid.Column="0" HorizontalAlignment="Center" Grid.Row="1" Text="?" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="5"/>
-        <TextBlock Grid.Column="1" HorizontalAlignment="Center" Grid.Row="1" Text="?" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="6"/>
-        <TextBlock Grid.Column="2" HorizontalAlignment="Center" Grid.Row="1" Text="?" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="7"/>
-        <TextBlock Grid.Column="3" HorizontalAlignment="Center" Grid.Row="1" Text="?" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="8"/>
-        <TextBlock Grid.Column="4" HorizontalAlignment="Center" Grid.Row="1" Text="?" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="9"/>
-        <TextBlock Grid.Column="0" HorizontalAlignment="Center" Grid.Row="2" Text="?" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="10"/>
-        <TextBlock Grid.Column="1" HorizontalAlignment="Center" Grid.Row="2" Text="?" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="11"/>
-        <TextBlock Grid.Column="2" HorizontalAlignment="Center" Grid.Row="2" Text="?" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="12"/>
-        <TextBlock Grid.Column="3" HorizontalAlignment="Center" Grid.Row="2" Text="?" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="13"/>
-        <TextBlock Grid.Column="4" HorizontalAlignment="Center" Grid.Row="2" Text="?" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="14"/>
-        <TextBlock Grid.Column="0" HorizontalAlignment="Center" Grid.Row="3" Text="?" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="15"/>
-        <TextBlock Grid.Column="1" HorizontalAlignment="Center" Grid.Row="3" Text="?" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="16"/>
-        <TextBlock Grid.Column="2" HorizontalAlignment="Center" Grid.Row="3" Text="?" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="17"/>
-        <TextBlock Grid.Column="3" HorizontalAlignment="Center" Grid.Row="3" Text="?" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="18"/>
-        <TextBlock Grid.Column="4" HorizontalAlignment="Center" Grid.Row="3" Text="?" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="19"/>
-        <TextBlock x:Name="timeTextBlock" HorizontalAlignment="Center" Grid.Row="4" Text="Elapsed Time" TextWrapping="Wrap" VerticalAlignment="Center" Grid.ColumnSpan="5" FontSize="36" MouseDown="TimeTextBlock_MouseDown"/>
+        <emoji:TextBlock Grid.Column="1" HorizontalAlignment="Center" Grid.Row="0" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="0"/>
+        <emoji:TextBlock Grid.Column="2" HorizontalAlignment="Center" Grid.Row="0" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="1"/>
+        <emoji:TextBlock Grid.Column="3" HorizontalAlignment="Center" Grid.Row="0" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="2"/>
+        <emoji:TextBlock Grid.Column="4" HorizontalAlignment="Center" Grid.Row="0" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="3"/>
+        <emoji:TextBlock Grid.Column="5" HorizontalAlignment="Center" Grid.Row="0" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="4"/>
+        <emoji:TextBlock Grid.Column="1" HorizontalAlignment="Center" Grid.Row="1" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="5"/>
+        <emoji:TextBlock Grid.Column="2" HorizontalAlignment="Center" Grid.Row="1" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="6"/>
+        <emoji:TextBlock Grid.Column="3" HorizontalAlignment="Center" Grid.Row="1" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="7"/>
+        <emoji:TextBlock Grid.Column="4" HorizontalAlignment="Center" Grid.Row="1" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="8"/>
+        <emoji:TextBlock Grid.Column="5" HorizontalAlignment="Center" Grid.Row="1" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="9"/>
+        <emoji:TextBlock Grid.Column="1" HorizontalAlignment="Center" Grid.Row="2" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="10"/>
+        <emoji:TextBlock Grid.Column="2" HorizontalAlignment="Center" Grid.Row="2" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="11"/>
+        <emoji:TextBlock Grid.Column="3" HorizontalAlignment="Center" Grid.Row="2" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="12"/>
+        <emoji:TextBlock Grid.Column="4" HorizontalAlignment="Center" Grid.Row="2" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="13"/>
+        <emoji:TextBlock Grid.Column="5" HorizontalAlignment="Center" Grid.Row="2" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="14"/>
+        <emoji:TextBlock Grid.Column="1" HorizontalAlignment="Center" Grid.Row="3" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="15"/>
+        <emoji:TextBlock Grid.Column="2" HorizontalAlignment="Center" Grid.Row="3" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="16"/>
+        <emoji:TextBlock Grid.Column="3" HorizontalAlignment="Center" Grid.Row="3" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="17"/>
+        <emoji:TextBlock Grid.Column="4" HorizontalAlignment="Center" Grid.Row="3" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="18"/>
+        <emoji:TextBlock Grid.Column="5" HorizontalAlignment="Center" Grid.Row="3" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="TextBlock_MouseDown" Tag="19"/>
+        <emoji:TextBlock x:Name="timeTextBlock" HorizontalAlignment="Center" Grid.Row="4" Text="To start, click on a ❓" TextWrapping="Wrap" VerticalAlignment="Center" Grid.ColumnSpan="7" FontSize="36" MouseDown="TimeTextBlock_MouseDown"/>
     </Grid>
 </Window>

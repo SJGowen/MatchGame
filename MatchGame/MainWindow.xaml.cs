@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
+using Emoji.Wpf;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -10,16 +10,17 @@ namespace MatchGame
 {
     public partial class MainWindow : Window
     {
-        readonly DispatcherTimer timer = new();
-        readonly DispatcherTimer delay = new();
+        private readonly int cellsToGuess = 10;
+        private readonly DispatcherTimer timer = new();
+        private readonly DispatcherTimer delay = new();
         private List<string> gameEmoji = new();
-        private TextBlock findingMatchFalseClicked;
-        private TextBlock findingMatchTrueClicked;
+        private TextBlock pictureToFind;
+        private TextBlock pictureGuessed;
         private int tenthsOfSecondsElapsed;
         private int matchesFound;
-        private bool displayMatch = false;
+        private bool pictureMatch = false;
         private bool findingMatch = false;
-        private int cellsToGuess = 10;
+        
 
 
         public MainWindow()
@@ -31,6 +32,7 @@ namespace MatchGame
 
             delay.Interval = TimeSpan.FromSeconds(1);
             delay.Tick += Delay_Tick;
+
             SetUpGame();
         }
 
@@ -52,6 +54,7 @@ namespace MatchGame
 
         private void SetUpGame()
         {
+            timer.Stop();
             gameEmoji.Clear();
             List<string> animalEmoji = new()
             {
@@ -77,7 +80,8 @@ namespace MatchGame
                 animalEmoji.RemoveAt(index);
             }
 
-            timeTextBlock.Text = "To start, click on a ?";
+            findingMatch = false;
+            timeTextBlock.Text = "To start, click on a ❓";
         }
 
 
@@ -86,34 +90,34 @@ namespace MatchGame
             void ProcessClick(TextBlock textBlock, string emojiClicked, bool match)
             {
                 textBlock.Text = emojiClicked;
-                displayMatch = match;
-                findingMatchTrueClicked = textBlock;
+                pictureMatch = match;
+                pictureGuessed = textBlock;
                 findingMatch = false;
                 delay.Start();
             }
 
-            ProcessTimerEvents();
-            TextBlock textBlock = sender as TextBlock;
-
-            if (textBlock.Text == "❓")
+            TextBlock cellClicked = sender as TextBlock;
+            if (cellClicked.Text == "❓")
             {
-                var pos = int.Parse(textBlock.Tag.ToString());
+                ProcessTimerEvents();
+
+                var pos = int.Parse(cellClicked.Tag.ToString());
                 string emojiClicked = gameEmoji[pos];
 
                 if (findingMatch == false)
                 {
-                    textBlock.Text = emojiClicked;
-                    findingMatchFalseClicked = textBlock;
+                    cellClicked.Text = emojiClicked;
+                    pictureToFind = cellClicked;
                     findingMatch = true;
                 }
-                else if (emojiClicked == findingMatchFalseClicked.Text)
+                else if (emojiClicked == pictureToFind.Text)
                 {
                     matchesFound++;
-                    ProcessClick(textBlock, emojiClicked, true);
+                    ProcessClick(cellClicked, emojiClicked, true);
                 }
                 else
                 {
-                    ProcessClick(textBlock, emojiClicked, false);
+                    ProcessClick(cellClicked, emojiClicked, false);
                 }
             }
         }
@@ -139,18 +143,14 @@ namespace MatchGame
             if (delay.IsEnabled)
             {
                 delay.Stop();
-                findingMatchFalseClicked.Text = displayMatch ? "✔" : "❓";
-                findingMatchTrueClicked.Text = displayMatch ? "✔" : "❓";
+                pictureToFind.Text = pictureMatch ? "✔" : "❓";
+                pictureGuessed.Text = pictureMatch ? "✔" : "❓";
             }
         }
 
         private void TimeTextBlock_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (matchesFound == cellsToGuess)
-            {
-                timer.Stop();
-                SetUpGame();
-            }
+            SetUpGame();
         }
     }
 }
