@@ -10,17 +10,27 @@ namespace MatchGame
 {
     public partial class MainWindow : Window
     {
-        private readonly int cellsToGuess = 10;
+        private int emojisToGuess = 12;
+        private readonly List<string> emojis = new() { 
+            "🌰", "🌱", "🌴", "🌵", "🌷", "🌸", "🌹", "🌺", "🌻", "🌼", "🌽", "🌾", 
+            "🌿", "🍀", "🍁", "🍂", "🍃", "🍄", "🍅", "🍆", "🍇", "🍈", "🍉", "🍊", 
+            "🍌", "🍍", "🍎", "🍏", "🍑", "🍒", "🍓", "🎃", "🎅", "🎠", "🎪", "🎷", 
+            "🎸", "🎹", "🎺", "🎻", "🏰", "🐌", "🐍", "🐎", "🐑", "🐒", "🐔", "🐗", 
+            "🐘", "🐙", "🐚", "🐛", "🐜", "🐝", "🐞", "🐟", "🐠", "🐡", "🐢", "🐣", 
+            "🐤", "🐥", "🐦", "🐧", "🐨", "🐩", "🐫", "🐬", "🐭", "🐮", "🐯", "🐰", 
+            "🐱", "🐲", "🐳", "🐴", "🐵", "🐶", "🐷", "🐸", "🐹", "🐺", "🐻", "🐼", 
+            "🙈", "🙉", "🙊", "🚑", "🚒", "🚓", "🚲", "🚛", "🍐", "🚴", "🐇", "📯", 
+            "🐅", "🚊", "🐪", "🐓", "🐐", "🐖", "🐋", "🚂", "🐈", "🚜", "🐁", "🐀", 
+            "🐏", "🐕", "🚁", "🐂", "🐄", "🐊", "🐆", "🌳", "🍋", "🌲", "🐃", "🏋"};
         private readonly DispatcherTimer timer = new();
         private readonly DispatcherTimer delay = new();
         private List<string> gameEmoji = new();
-        private TextBlock pictureToFind;
-        private TextBlock pictureGuessed;
+        private TextBlock emojiToFind;
+        private TextBlock emojiGuessed;
         private int tenthsOfSecondsElapsed;
         private int matchesFound;
-        private bool pictureMatch = false;
+        private bool emojiMatch = false;
         private bool findingMatch = false;
-        
 
 
         public MainWindow()
@@ -39,11 +49,11 @@ namespace MatchGame
         private void Timer_Tick(object sender, EventArgs e)
         {
             tenthsOfSecondsElapsed++;
-            timeTextBlock.Text = (tenthsOfSecondsElapsed / 10F).ToString("0.0s");
-            if (matchesFound == cellsToGuess)
+            TimeTextBlock.Text = (tenthsOfSecondsElapsed / 10F).ToString("0.0s");
+            if (matchesFound == emojisToGuess)
             {
                 timer.Stop();
-                timeTextBlock.Text += " - Play Again?";
+                TimeTextBlock.Text = "Click Me to Beat - " + TimeTextBlock.Text;
             }
         }
 
@@ -56,42 +66,40 @@ namespace MatchGame
         {
             timer.Stop();
             gameEmoji.Clear();
-            List<string> animalEmoji = new()
-            {
-                "🐘", "🐘",
-                "🐙", "🐙",
-                "🐹", "🐹",
-                "🐮", "🐮",
-                "🐷", "🐷",
-                "🙉", "🙉",
-                "🦈", "🦈",
-                "🦊", "🦊",
-                "🐒", "🐒",
-                "🦍", "🦍"
-            };
 
             Random random = new();
+            List<string> emojisToDisplay = new();
 
-            foreach (var textBlock in mainGrid.Children.OfType<TextBlock>().Where(x => x.Name == ""))
+            while (emojisToDisplay.Count < emojisToGuess * 2)
+            {
+                var character = random.Next(emojis.Count);
+                if (!emojisToDisplay.Contains(emojis[character]))
+                {
+                    emojisToDisplay.Add(emojis[character]);
+                    emojisToDisplay.Add(emojis[character]);
+                }
+            }
+
+            foreach (var textBlock in MainGrid.Children.OfType<TextBlock>().Where(x => x.Name == "" && x.ActualWidth > 0))
             {
                 textBlock.Text ="❓";
-                int index = random.Next(animalEmoji.Count);
-                gameEmoji.Add(animalEmoji[index]);
-                animalEmoji.RemoveAt(index);
+                int index = random.Next(emojisToDisplay.Count);
+                gameEmoji.Add(emojisToDisplay[index]);
+                emojisToDisplay.RemoveAt(index);
             }
 
             findingMatch = false;
-            timeTextBlock.Text = "To start, click on a ❓";
+            TimeTextBlock.Text = "To Start, click ❓ above";
         }
 
 
-        private void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
+        private void Emoji_MouseDown(object sender, MouseButtonEventArgs e)
         {
             void ProcessClick(TextBlock textBlock, string emojiClicked, bool match)
             {
                 textBlock.Text = emojiClicked;
-                pictureMatch = match;
-                pictureGuessed = textBlock;
+                emojiMatch = match;
+                emojiGuessed = textBlock;
                 findingMatch = false;
                 delay.Start();
             }
@@ -107,10 +115,10 @@ namespace MatchGame
                 if (findingMatch == false)
                 {
                     cellClicked.Text = emojiClicked;
-                    pictureToFind = cellClicked;
+                    emojiToFind = cellClicked;
                     findingMatch = true;
                 }
-                else if (emojiClicked == pictureToFind.Text)
+                else if (emojiClicked == emojiToFind.Text)
                 {
                     matchesFound++;
                     ProcessClick(cellClicked, emojiClicked, true);
@@ -132,6 +140,8 @@ namespace MatchGame
         {
             if (!timer.IsEnabled)
             {
+                if (emojisToGuess * 2 != gameEmoji.Count) 
+                    SetUpGame();
                 timer.Start();
                 tenthsOfSecondsElapsed = 0;
                 matchesFound = 0;
@@ -143,14 +153,30 @@ namespace MatchGame
             if (delay.IsEnabled)
             {
                 delay.Stop();
-                pictureToFind.Text = pictureMatch ? "✔" : "❓";
-                pictureGuessed.Text = pictureMatch ? "✔" : "❓";
+                emojiToFind.Text = emojiMatch ? "✔" : "❓";
+                emojiGuessed.Text = emojiMatch ? "✔" : "❓";
             }
         }
 
         private void TimeTextBlock_MouseDown(object sender, MouseButtonEventArgs e)
         {
             SetUpGame();
+        }
+
+        private void MainGrid_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (!timer.IsEnabled)
+            {
+                Col8.Width = e.NewSize.Width < 692 ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
+                Col7.Width = e.NewSize.Width < 608 ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
+                Col6.Width = e.NewSize.Width < 524 ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
+                Col5.Width = e.NewSize.Width < 440 ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
+                emojisToGuess = 16;
+                if (e.NewSize.Width < 692) emojisToGuess = 14;
+                if (e.NewSize.Width < 608) emojisToGuess = 12;
+                if (e.NewSize.Width < 524) emojisToGuess = 10;
+                if (e.NewSize.Width < 440) emojisToGuess = 8;
+            }
         }
     }
 }
