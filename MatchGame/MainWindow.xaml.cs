@@ -10,7 +10,7 @@ namespace MatchGame
 {
     public partial class MainWindow : Window
     {
-        private int emojisToGuess = 12;
+        private int emojisToGuess;
         private readonly List<string> emojis = new() { 
             "🌰", "🌱", "🌴", "🌵", "🌷", "🌸", "🌹", "🌺", "🌻", "🌼", "🌽", "🌾", 
             "🌿", "🍀", "🍁", "🍂", "🍃", "🍄", "🍅", "🍆", "🍇", "🍈", "🍉", "🍊", 
@@ -42,8 +42,6 @@ namespace MatchGame
 
             delay.Interval = TimeSpan.FromSeconds(1);
             delay.Tick += Delay_Tick;
-
-            SetUpGame();
         }
 
         private void Timer_Tick(object sender, EventArgs e)
@@ -54,6 +52,7 @@ namespace MatchGame
             {
                 timer.Stop();
                 TimeTextBlock.Text = "Click Me to Beat - " + TimeTextBlock.Text;
+                ResizeMode = ResizeMode.CanResize;
             }
         }
 
@@ -82,7 +81,7 @@ namespace MatchGame
 
             foreach (var textBlock in MainGrid.Children.OfType<TextBlock>().Where(x => x.Name == "" && x.ActualWidth > 0))
             {
-                textBlock.Text ="❓";
+                textBlock.Text = "❓";
                 int index = random.Next(emojisToDisplay.Count);
                 gameEmoji.Add(emojisToDisplay[index]);
                 emojisToDisplay.RemoveAt(index);
@@ -142,6 +141,8 @@ namespace MatchGame
             {
                 if (emojisToGuess * 2 != gameEmoji.Count) 
                     SetUpGame();
+
+                ResizeMode = ResizeMode.NoResize;
                 timer.Start();
                 tenthsOfSecondsElapsed = 0;
                 matchesFound = 0;
