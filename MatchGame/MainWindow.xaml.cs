@@ -10,7 +10,8 @@ namespace MatchGame
 {
     public partial class MainWindow : Window
     {
-        private int emojisToGuess;
+        private int EmojisToGuess;
+        private readonly GameGuesser GameGuesser = new();
         private readonly List<string> emojis = new() { 
             "🌰", "🌱", "🌴", "🌵", "🌷", "🌸", "🌹", "🌺", "🌻", "🌼", "🌽", "🌾", 
             "🌿", "🍀", "🍁", "🍂", "🍃", "🍄", "🍅", "🍆", "🍇", "🍈", "🍉", "🍊", 
@@ -22,35 +23,32 @@ namespace MatchGame
             "🙈", "🙉", "🙊", "🚑", "🚒", "🚓", "🚲", "🚛", "🍐", "🚴", "🐇", "📯", 
             "🐅", "🚊", "🐪", "🐓", "🐐", "🐖", "🐋", "🚂", "🐈", "🚜", "🐁", "🐀", 
             "🐏", "🐕", "🚁", "🐂", "🐄", "🐊", "🐆", "🌳", "🍋", "🌲", "🐃", "🏋"};
-        private readonly DispatcherTimer timer = new();
-        private readonly DispatcherTimer delay = new();
-        private List<string> gameEmoji = new();
-        private TextBlock emojiToFind;
-        private TextBlock emojiGuessed;
-        private int tenthsOfSecondsElapsed;
-        private int matchesFound;
-        private bool emojiMatch = false;
-        private bool findingMatch = false;
-
+        private readonly DispatcherTimer Timer = new();
+        private readonly DispatcherTimer Delay = new();
+        private readonly List<string> GameEmoji = new();
+        private int TenthsOfSecondsElapsed;
+        private int MatchesFound;
+        private bool FindingMatch = false;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            timer.Interval = TimeSpan.FromSeconds(.1);
-            timer.Tick += Timer_Tick;
+            Timer.Interval = TimeSpan.FromSeconds(.1);
+            Timer.Tick += Timer_Tick;
 
-            delay.Interval = TimeSpan.FromSeconds(1);
-            delay.Tick += Delay_Tick;
+            Delay.Interval = TimeSpan.FromSeconds(1);
+            Delay.Tick += Delay_Tick;
         }
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            tenthsOfSecondsElapsed++;
-            TimeTextBlock.Text = (tenthsOfSecondsElapsed / 10F).ToString("0.0s");
-            if (matchesFound == emojisToGuess)
+            TenthsOfSecondsElapsed++;
+            TimeTextBlock.Text = (TenthsOfSecondsElapsed / 10F).ToString("0.0s");
+
+            if (MatchesFound == EmojisToGuess)
             {
-                timer.Stop();
+                Timer.Stop();
                 TimeTextBlock.Text = "Click Me to Beat - " + TimeTextBlock.Text;
                 ResizeMode = ResizeMode.CanResize;
             }
@@ -63,13 +61,13 @@ namespace MatchGame
 
         private void SetUpGame()
         {
-            timer.Stop();
-            gameEmoji.Clear();
+            Timer.Stop();
+            GameEmoji.Clear();
 
             Random random = new();
             List<string> emojisToDisplay = new();
 
-            while (emojisToDisplay.Count < emojisToGuess * 2)
+            while (emojisToDisplay.Count < EmojisToGuess * 2)
             {
                 var character = random.Next(emojis.Count);
                 if (!emojisToDisplay.Contains(emojis[character]))
@@ -83,49 +81,41 @@ namespace MatchGame
             {
                 textBlock.Text = "❓";
                 int index = random.Next(emojisToDisplay.Count);
-                gameEmoji.Add(emojisToDisplay[index]);
+                GameEmoji.Add(emojisToDisplay[index]);
                 emojisToDisplay.RemoveAt(index);
             }
 
-            findingMatch = false;
+            FindingMatch = false;
+            GameGuesser.Reinitialise();
             TimeTextBlock.Text = "To Start, click ❓ above";
         }
 
-
         private void Emoji_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            void ProcessClick(TextBlock textBlock, string emojiClicked, bool match)
-            {
-                textBlock.Text = emojiClicked;
-                emojiMatch = match;
-                emojiGuessed = textBlock;
-                findingMatch = false;
-                delay.Start();
-            }
-
             TextBlock cellClicked = sender as TextBlock;
             if (cellClicked.Text == "❓")
             {
                 ProcessTimerEvents();
 
                 var pos = int.Parse(cellClicked.Tag.ToString());
-                string emojiClicked = gameEmoji[pos];
+                string emojiClicked = GameEmoji[pos];
+                cellClicked.Text = emojiClicked;
 
-                if (findingMatch == false)
+                if (FindingMatch == false)
                 {
-                    cellClicked.Text = emojiClicked;
-                    emojiToFind = cellClicked;
-                    findingMatch = true;
-                }
-                else if (emojiClicked == emojiToFind.Text)
-                {
-                    matchesFound++;
-                    ProcessClick(cellClicked, emojiClicked, true);
-                }
+                    GameGuesser.RecordToFind(cellClicked);
+                } 
                 else
                 {
-                    ProcessClick(cellClicked, emojiClicked, false);
+                    if (GameGuesser.RecordGuess(cellClicked))
+                    {
+                        MatchesFound++;
+                    }
+
+                    Delay.Start();
                 }
+
+                FindingMatch = !FindingMatch;
             }
         }
 
@@ -137,25 +127,24 @@ namespace MatchGame
 
         private void ProcessStart()
         {
-            if (!timer.IsEnabled)
+            if (!Timer.IsEnabled)
             {
-                if (emojisToGuess * 2 != gameEmoji.Count) 
+                if (EmojisToGuess * 2 != GameEmoji.Count) 
                     SetUpGame();
 
                 ResizeMode = ResizeMode.NoResize;
-                timer.Start();
-                tenthsOfSecondsElapsed = 0;
-                matchesFound = 0;
+                Timer.Start();
+                TenthsOfSecondsElapsed = 0;
+                MatchesFound = 0;
             }
         }
 
         private void ProcessDelay()
         {
-            if (delay.IsEnabled)
+            if (Delay.IsEnabled)
             {
-                delay.Stop();
-                emojiToFind.Text = emojiMatch ? "✔" : "❓";
-                emojiGuessed.Text = emojiMatch ? "✔" : "❓";
+                Delay.Stop();
+                GameGuesser.ProcessGuess();
             }
         }
 
@@ -166,18 +155,54 @@ namespace MatchGame
 
         private void MainGrid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (!timer.IsEnabled)
+            if (!Timer.IsEnabled)
             {
                 Col8.Width = e.NewSize.Width < 692 ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
                 Col7.Width = e.NewSize.Width < 608 ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
                 Col6.Width = e.NewSize.Width < 524 ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
                 Col5.Width = e.NewSize.Width < 440 ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
-                emojisToGuess = 16;
-                if (e.NewSize.Width < 692) emojisToGuess = 14;
-                if (e.NewSize.Width < 608) emojisToGuess = 12;
-                if (e.NewSize.Width < 524) emojisToGuess = 10;
-                if (e.NewSize.Width < 440) emojisToGuess = 8;
+                EmojisToGuess = 16;
+                if (e.NewSize.Width < 692) EmojisToGuess = 14;
+                if (e.NewSize.Width < 608) EmojisToGuess = 12;
+                if (e.NewSize.Width < 524) EmojisToGuess = 10;
+                if (e.NewSize.Width < 440) EmojisToGuess = 8;
             }
+        }
+    }
+
+    public class GameGuesser
+    {
+        private TextBlock EmojiToFind { get; set; }
+        private TextBlock EmojiGuessed { get; set; }
+
+        public GameGuesser()
+        {
+            EmojiToFind = new TextBlock();
+            EmojiGuessed = new TextBlock();
+        }
+
+        public void Reinitialise()
+        {
+            EmojiToFind.Text = "❓";
+            EmojiGuessed.Text = "❓";
+        }
+
+        public void RecordToFind(TextBlock emojiToFind)
+        {
+            EmojiToFind = emojiToFind;
+        }
+
+        public bool RecordGuess(TextBlock emojiGuessed)
+        {
+            EmojiGuessed = emojiGuessed;
+            return EmojiToFind.Text == EmojiGuessed.Text;
+        }
+
+        public void ProcessGuess()
+        {
+            var guessCorrect = EmojiToFind.Text == EmojiGuessed.Text;
+            EmojiToFind.Text = guessCorrect ? "✔" : "❓";
+            EmojiGuessed.Text = guessCorrect ? "✔" : "❓";
         }
     }
 }
