@@ -11,7 +11,7 @@ namespace MatchGame
     public partial class MainWindow : Window
     {
         private int EmojisToGuess;
-        private readonly GameGuesser GameGuesser = new();
+        private readonly MatchGuesser GameGuesser = new();
         private readonly List<string> emojis = new() { 
             "🌰", "🌱", "🌴", "🌵", "🌷", "🌸", "🌹", "🌺", "🌻", "🌼", "🌽", "🌾", 
             "🌿", "🍀", "🍁", "🍂", "🍃", "🍄", "🍅", "🍆", "🍇", "🍈", "🍉", "🍊", 
@@ -170,16 +170,10 @@ namespace MatchGame
         }
     }
 
-    public class GameGuesser
+    public class MatchGuesser
     {
-        private TextBlock EmojiToFind { get; set; }
-        private TextBlock EmojiGuessed { get; set; }
-
-        public GameGuesser()
-        {
-            EmojiToFind = new TextBlock();
-            EmojiGuessed = new TextBlock();
-        }
+        private TextBlock EmojiToFind { get; set; } = new();
+        private TextBlock EmojiGuessed { get; set; } = new();
 
         public void Reinitialise()
         {
