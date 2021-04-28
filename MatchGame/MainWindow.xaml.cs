@@ -101,7 +101,7 @@ namespace MatchGame
                 string emojiClicked = GameEmoji[pos];
                 cellClicked.Text = emojiClicked;
 
-                if (FindingMatch == false)
+                if (!FindingMatch)
                 {
                     GameGuesser.RecordToFind(cellClicked);
                 } 
@@ -167,36 +167,6 @@ namespace MatchGame
                 if (e.NewSize.Width < 524) EmojisToGuess = 10;
                 if (e.NewSize.Width < 440) EmojisToGuess = 8;
             }
-        }
-    }
-
-    public class MatchGuesser
-    {
-        private TextBlock EmojiToFind { get; set; } = new();
-        private TextBlock EmojiGuessed { get; set; } = new();
-
-        public void Reinitialise()
-        {
-            EmojiToFind.Text = "❓";
-            EmojiGuessed.Text = "❓";
-        }
-
-        public void RecordToFind(TextBlock emojiToFind)
-        {
-            EmojiToFind = emojiToFind;
-        }
-
-        public bool RecordGuess(TextBlock emojiGuessed)
-        {
-            EmojiGuessed = emojiGuessed;
-            return EmojiToFind.Text == EmojiGuessed.Text;
-        }
-
-        public void ProcessGuess()
-        {
-            var guessCorrect = EmojiToFind.Text == EmojiGuessed.Text;
-            EmojiToFind.Text = guessCorrect ? "✔" : "❓";
-            EmojiGuessed.Text = guessCorrect ? "✔" : "❓";
         }
     }
 }
