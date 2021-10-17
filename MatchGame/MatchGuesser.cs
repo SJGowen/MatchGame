@@ -2,7 +2,7 @@
 
 namespace MatchGame
 {
-    public class MatchGuesser
+    internal class MatchGuesser
     {
         private TextBlock EmojiToFind { get; set; } = new();
         private TextBlock EmojiGuessed { get; set; } = new();
@@ -26,7 +26,7 @@ namespace MatchGame
 
         public void ProcessGuess()
         {
-            var guessCorrect = EmojiToFind.Text == EmojiGuessed.Text;
+            bool guessCorrect = EmojiToFind.Text == EmojiGuessed.Text;
             EmojiToFind.Text = guessCorrect ? "✔" : "❓";
             EmojiGuessed.Text = guessCorrect ? "✔" : "❓";
         }

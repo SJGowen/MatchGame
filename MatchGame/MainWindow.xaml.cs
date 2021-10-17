@@ -11,8 +11,8 @@ namespace MatchGame
     public partial class MainWindow : Window
     {
         private int EmojisToGuess;
-        private readonly MatchGuesser GameGuesser = new();
-        private readonly List<string> emojis = new() { 
+        private readonly MatchGuesser MatchGuesser = new();
+        private readonly List<string> Emojis = new() { 
             "🌰", "🌱", "🌴", "🌵", "🌷", "🌸", "🌹", "🌺", "🌻", "🌼", "🌽", "🌾", 
             "🌿", "🍀", "🍁", "🍂", "🍃", "🍄", "🍅", "🍆", "🍇", "🍈", "🍉", "🍊", 
             "🍌", "🍍", "🍎", "🍏", "🍑", "🍒", "🍓", "🎃", "🎅", "🎠", "🎪", "🎷", 
@@ -25,10 +25,11 @@ namespace MatchGame
             "🐏", "🐕", "🚁", "🐂", "🐄", "🐊", "🐆", "🌳", "🍋", "🌲", "🐃", "🏋"};
         private readonly DispatcherTimer Timer = new();
         private readonly DispatcherTimer Delay = new();
-        private readonly List<string> GameEmoji = new();
+        private readonly List<string> GameEmojis = new();
         private int TenthsOfSecondsElapsed;
         private int MatchesFound;
-        private bool FindingMatch = false;
+        private bool FindingMatch;
+        private readonly TimeRecorder TimeRecorder = new();
 
         public MainWindow()
         {
@@ -51,6 +52,8 @@ namespace MatchGame
                 Timer.Stop();
                 TimeTextBlock.Text = "Click Me to Beat - " + TimeTextBlock.Text;
                 ResizeMode = ResizeMode.CanResize;
+                TimeRecorder.RecordBestTimes(EmojisToGuess, TenthsOfSecondsElapsed, Top, Left);
+                TimeTextBlock.ToolTip = TimeRecorder.GetBestTimes();
             }
         }
 
@@ -62,18 +65,18 @@ namespace MatchGame
         private void SetUpGame()
         {
             Timer.Stop();
-            GameEmoji.Clear();
+            GameEmojis.Clear();
 
             Random random = new();
             List<string> emojisToDisplay = new();
 
             while (emojisToDisplay.Count < EmojisToGuess * 2)
             {
-                var character = random.Next(emojis.Count);
-                if (!emojisToDisplay.Contains(emojis[character]))
+                var character = random.Next(Emojis.Count);
+                if (!emojisToDisplay.Contains(Emojis[character]))
                 {
-                    emojisToDisplay.Add(emojis[character]);
-                    emojisToDisplay.Add(emojis[character]);
+                    emojisToDisplay.Add(Emojis[character]);
+                    emojisToDisplay.Add(Emojis[character]);
                 }
             }
 
@@ -81,13 +84,13 @@ namespace MatchGame
             {
                 textBlock.Text = "❓";
                 int index = random.Next(emojisToDisplay.Count);
-                GameEmoji.Add(emojisToDisplay[index]);
+                GameEmojis.Add(emojisToDisplay[index]);
                 emojisToDisplay.RemoveAt(index);
             }
 
             FindingMatch = false;
-            GameGuesser.Reinitialise();
-            TimeTextBlock.Text = "To Start, click ❓ above";
+            MatchGuesser.Reinitialise();
+            TimeTextBlock.Text = "To Start, Click ❓ Above";
         }
 
         private void Emoji_MouseDown(object sender, MouseButtonEventArgs e)
@@ -95,19 +98,20 @@ namespace MatchGame
             TextBlock cellClicked = sender as TextBlock;
             if (cellClicked.Text == "❓")
             {
-                ProcessTimerEvents();
+                ProcessStart();
+                ProcessDelay();
 
                 var pos = int.Parse(cellClicked.Tag.ToString());
-                string emojiClicked = GameEmoji[pos];
+                string emojiClicked = GameEmojis[pos];
                 cellClicked.Text = emojiClicked;
 
                 if (!FindingMatch)
                 {
-                    GameGuesser.RecordToFind(cellClicked);
+                    MatchGuesser.RecordToFind(cellClicked);
                 } 
                 else
                 {
-                    if (GameGuesser.RecordGuess(cellClicked))
+                    if (MatchGuesser.RecordGuess(cellClicked))
                     {
                         MatchesFound++;
                     }
@@ -119,18 +123,14 @@ namespace MatchGame
             }
         }
 
-        private void ProcessTimerEvents()
-        {
-            ProcessStart();
-            ProcessDelay();
-        }
-
         private void ProcessStart()
         {
             if (!Timer.IsEnabled)
             {
-                if (EmojisToGuess * 2 != GameEmoji.Count) 
+                if (EmojisToGuess * 2 != GameEmojis.Count)
+                {
                     SetUpGame();
+                }
 
                 ResizeMode = ResizeMode.NoResize;
                 Timer.Start();
@@ -144,12 +144,13 @@ namespace MatchGame
             if (Delay.IsEnabled)
             {
                 Delay.Stop();
-                GameGuesser.ProcessGuess();
+                MatchGuesser.ProcessGuess();
             }
         }
 
         private void TimeTextBlock_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            ProcessDelay();
             SetUpGame();
         }
 
@@ -157,11 +158,15 @@ namespace MatchGame
         {
             if (!Timer.IsEnabled)
             {
+                Col10.Width = e.NewSize.Width < 860 ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
+                Col9.Width = e.NewSize.Width < 776 ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
                 Col8.Width = e.NewSize.Width < 692 ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
                 Col7.Width = e.NewSize.Width < 608 ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
                 Col6.Width = e.NewSize.Width < 524 ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
                 Col5.Width = e.NewSize.Width < 440 ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
-                EmojisToGuess = 16;
+                EmojisToGuess = 20;
+                if (e.NewSize.Width < 860) EmojisToGuess = 18;
+                if (e.NewSize.Width < 776) EmojisToGuess = 16;
                 if (e.NewSize.Width < 692) EmojisToGuess = 14;
                 if (e.NewSize.Width < 608) EmojisToGuess = 12;
                 if (e.NewSize.Width < 524) EmojisToGuess = 10;
