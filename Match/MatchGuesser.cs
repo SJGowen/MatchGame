@@ -1,17 +1,11 @@
 ﻿using Emoji.Wpf;
 
-namespace MatchGame
+namespace Match
 {
     internal class MatchGuesser
     {
         private TextBlock EmojiToFind { get; set; } = new();
         private TextBlock EmojiGuessed { get; set; } = new();
-
-        public void Reinitialise()
-        {
-            EmojiToFind.Text = "❓";
-            EmojiGuessed.Text = "❓";
-        }
 
         public void RecordToFind(TextBlock emojiToFind)
         {
@@ -24,11 +18,18 @@ namespace MatchGame
             return EmojiToFind.Text == EmojiGuessed.Text;
         }
 
-        public void ProcessGuess()
+        public void ProcessGuess(bool showTicks)
         {
-            bool guessCorrect = EmojiToFind.Text == EmojiGuessed.Text;
-            EmojiToFind.Text = guessCorrect ? "✔" : "❓";
-            EmojiGuessed.Text = guessCorrect ? "✔" : "❓";
+            if (EmojiToFind.Text != EmojiGuessed.Text)
+            {
+                EmojiToFind.Text = "❓";
+                EmojiGuessed.Text = "❓";
+            }
+            else if (showTicks)
+            {
+                EmojiToFind.Text = "✔";
+                EmojiGuessed.Text = "✔";
+            }
         }
     }
 }

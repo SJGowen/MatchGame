@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using WpfDialogs;
 
-namespace MatchGame
+namespace Match
 {
     internal class TimeRecorder
     {
@@ -21,10 +21,15 @@ namespace MatchGame
 
             if (BestTimes.Count < 5 || tenthsOfSecondsElapsed < BestTimes.Max(l => l.time))
             {
-                StringGetter name = new("You are a High Scorer", "Please enter your name:", LastPlayer != "" ? LastPlayer : "Anonymous", top, left);
-                LastPlayer = (bool)name.ShowDialog() ? name.Answer : "Anonymous";
-                BestTimes.Add(new(tenthsOfSecondsElapsed, LastPlayer));
-                SaveBestTimes(emojisToGuess, BestTimes);
+                StringGetter name = new("You are a High Scorer", "Please enter your name:",
+                    !string.IsNullOrWhiteSpace(LastPlayer) ? LastPlayer : "Anonymous", top, left);
+                name.ShowDialog();
+                if (name.DialogResult == true)
+                {
+                    LastPlayer = !string.IsNullOrWhiteSpace(name.Answer) ? name.Answer : "Anonymous";
+                    BestTimes.Add(new(tenthsOfSecondsElapsed, LastPlayer));
+                    SaveBestTimes(emojisToGuess, BestTimes);
+                }
             }
         }
 

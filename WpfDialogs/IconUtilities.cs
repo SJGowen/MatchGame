@@ -12,7 +12,6 @@ namespace WpfDialogs
     internal static class IconUtilities
     {
         [DllImport("gdi32.dll", SetLastError = true)]
-
         private static extern bool DeleteObject(IntPtr hObject);
 
         public static ImageSource ToImageSource(this Icon icon)

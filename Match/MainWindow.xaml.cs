@@ -1,28 +1,32 @@
-﻿using System;
+﻿using Emoji.Wpf;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using Emoji.Wpf;
 using System.Windows.Input;
 using System.Windows.Threading;
 
-namespace MatchGame
+namespace Match
 {
     public partial class MainWindow : Window
     {
         private int EmojisToGuess;
         private readonly MatchGuesser MatchGuesser = new();
-        private readonly List<string> Emojis = new() { 
-            "🌰", "🌱", "🌴", "🌵", "🌷", "🌸", "🌹", "🌺", "🌻", "🌼", "🌽", "🌾", 
-            "🌿", "🍀", "🍁", "🍂", "🍃", "🍄", "🍅", "🍆", "🍇", "🍈", "🍉", "🍊", 
-            "🍌", "🍍", "🍎", "🍏", "🍑", "🍒", "🍓", "🎃", "🎅", "🎠", "🎪", "🎷", 
-            "🎸", "🎹", "🎺", "🎻", "🏰", "🐌", "🐍", "🐎", "🐑", "🐒", "🐔", "🐗", 
-            "🐘", "🐙", "🐚", "🐛", "🐜", "🐝", "🐞", "🐟", "🐠", "🐡", "🐢", "🐣", 
-            "🐤", "🐥", "🐦", "🐧", "🐨", "🐩", "🐫", "🐬", "🐭", "🐮", "🐯", "🐰", 
-            "🐱", "🐲", "🐳", "🐴", "🐵", "🐶", "🐷", "🐸", "🐹", "🐺", "🐻", "🐼", 
-            "🙈", "🙉", "🙊", "🚑", "🚒", "🚓", "🚲", "🚛", "🍐", "🚴", "🐇", "📯", 
-            "🐅", "🚊", "🐪", "🐓", "🐐", "🐖", "🐋", "🚂", "🐈", "🚜", "🐁", "🐀", 
-            "🐏", "🐕", "🚁", "🐂", "🐄", "🐊", "🐆", "🌳", "🍋", "🌲", "🐃", "🏋"};
+
+        private readonly List<string> Emojis = new()
+        {
+            "🌰", "🌱", "🌴", "🌵", "🌷", "🌸", "🌹", "🌺", "🌻", "🌼", "🌽", "🌾",
+            "🌿", "🍀", "🍁", "🍂", "🍃","🍄", "🍅", "🍆", "🍇", "🍈", "🍉", "🍊",
+            "🍌", "🍍", "🍎", "🍏", "🍑", "🍒", "🍓", "🎃", "🎅", "🎠", "🎪", "🎷",
+            "🎸", "🎹", "🎺", "🎻", "🏰", "🐌", "🐍", "🐎", "🐑", "🐒", "🐔", "🐗",
+            "🐘", "🐙", "🐚", "🐛", "🐜", "🐝", "🐞", "🐟", "🐠", "🐡", "🐢", "🐣",
+            "🐤", "🐥", "🐦", "🐧", "🐨", "🐩", "🐫", "🐬", "🐭", "🐮", "🐯", "🐰",
+            "🐱", "🐲", "🐳", "🐴", "🐵", "🐶", "🐷", "🐸", "🐹", "🐺", "🐻", "🐼",
+            "🙈", "🙉", "🙊", "🚑", "🚒", "🚓", "🚲", "🚛", "🍐", "🚴", "🐇", "📯",
+            "🐅", "🚊", "🐪", "🐓", "🐐", "🐖", "🐋", "🚂", "🐈", "🚜", "🐁", "🐀",
+            "🐏", "🐕", "🚁", "🐂", "🐄", "🐊", "🐆", "🌳", "🍋", "🌲", "🐃", "🏋"
+        };
+
         private readonly DispatcherTimer Timer = new();
         private readonly DispatcherTimer Delay = new();
         private readonly List<string> GameEmojis = new();
@@ -30,10 +34,12 @@ namespace MatchGame
         private int MatchesFound;
         private bool FindingMatch;
         private readonly TimeRecorder TimeRecorder = new();
+        private readonly string[] Args;
 
         public MainWindow()
         {
             InitializeComponent();
+            Args = Environment.GetCommandLineArgs();
 
             Timer.Interval = TimeSpan.FromSeconds(.1);
             Timer.Tick += Timer_Tick;
@@ -89,7 +95,6 @@ namespace MatchGame
             }
 
             FindingMatch = false;
-            MatchGuesser.Reinitialise();
             TimeTextBlock.Text = "To Start, Click ❓ Above";
         }
 
@@ -108,7 +113,7 @@ namespace MatchGame
                 if (!FindingMatch)
                 {
                     MatchGuesser.RecordToFind(cellClicked);
-                } 
+                }
                 else
                 {
                     if (MatchGuesser.RecordGuess(cellClicked))
@@ -144,7 +149,7 @@ namespace MatchGame
             if (Delay.IsEnabled)
             {
                 Delay.Stop();
-                MatchGuesser.ProcessGuess();
+                MatchGuesser.ProcessGuess(Args.Count() > 1 && string.Equals(Args[1], "ShowTicks", StringComparison.InvariantCultureIgnoreCase));
             }
         }
 
@@ -158,13 +163,17 @@ namespace MatchGame
         {
             if (!Timer.IsEnabled)
             {
+                Col12.Width = e.NewSize.Width < 1028 ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
+                Col11.Width = e.NewSize.Width < 944 ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
                 Col10.Width = e.NewSize.Width < 860 ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
                 Col9.Width = e.NewSize.Width < 776 ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
                 Col8.Width = e.NewSize.Width < 692 ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
                 Col7.Width = e.NewSize.Width < 608 ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
                 Col6.Width = e.NewSize.Width < 524 ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
                 Col5.Width = e.NewSize.Width < 440 ? new GridLength(0) : new GridLength(1, GridUnitType.Star);
-                EmojisToGuess = 20;
+                EmojisToGuess = 24;
+                if (e.NewSize.Width < 1028) EmojisToGuess = 22;
+                if (e.NewSize.Width < 944) EmojisToGuess = 20;
                 if (e.NewSize.Width < 860) EmojisToGuess = 18;
                 if (e.NewSize.Width < 776) EmojisToGuess = 16;
                 if (e.NewSize.Width < 692) EmojisToGuess = 14;
