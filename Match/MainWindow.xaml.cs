@@ -138,9 +138,9 @@ namespace Match
                 }
 
                 ResizeMode = ResizeMode.NoResize;
-                Timer.Start();
                 TenthsOfSecondsElapsed = 0;
                 MatchesFound = 0;
+                Timer.Start();
             }
         }
 
@@ -149,7 +149,7 @@ namespace Match
             if (Delay.IsEnabled)
             {
                 Delay.Stop();
-                MatchGuesser.ProcessGuess(Args.Count() > 1 && string.Equals(Args[1], "ShowTicks", StringComparison.InvariantCultureIgnoreCase));
+                MatchGuesser.ProcessGuess(Args.Length > 1 && string.Equals(Args[1], "ShowTicks", StringComparison.InvariantCultureIgnoreCase));
             }
         }
 

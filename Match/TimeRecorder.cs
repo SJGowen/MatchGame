@@ -21,10 +21,10 @@ namespace Match
 
             if (BestTimes.Count < 5 || tenthsOfSecondsElapsed < BestTimes.Max(l => l.time))
             {
-                StringGetter name = new("You are a High Scorer", "Please enter your name:",
+                StringGetter name = new("You have finished in a Best Time", "Please enter your name:",
                     !string.IsNullOrWhiteSpace(LastPlayer) ? LastPlayer : "Anonymous", top, left);
-                name.ShowDialog();
-                if (name.DialogResult == true)
+
+                if (name.ShowDialog() == true)
                 {
                     LastPlayer = !string.IsNullOrWhiteSpace(name.Answer) ? name.Answer : "Anonymous";
                     BestTimes.Add(new(tenthsOfSecondsElapsed, LastPlayer));
