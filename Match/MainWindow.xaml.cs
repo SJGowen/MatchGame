@@ -56,7 +56,7 @@ namespace Match
             if (MatchesFound == EmojisToGuess)
             {
                 Timer.Stop();
-                TimeTextBlock.Text = "Click Me to Beat - " + TimeTextBlock.Text;
+                TimeTextBlock.Text = "Click - To Beat - " + TimeTextBlock.Text;
                 ResizeMode = ResizeMode.CanResize;
                 TimeRecorder.RecordBestTimes(EmojisToGuess, TenthsOfSecondsElapsed, Top, Left);
                 TimeTextBlock.ToolTip = TimeRecorder.GetBestTimes();
@@ -125,6 +125,13 @@ namespace Match
                 }
 
                 FindingMatch = !FindingMatch;
+            }
+            else
+            {
+                if (MatchesFound == EmojisToGuess)
+                {
+                    TimeTextBlock_MouseDown(sender, e);
+                }
             }
         }
 
