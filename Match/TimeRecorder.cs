@@ -12,12 +12,10 @@ namespace Match
         private readonly string BestTimesFile = "BestTimes.txt";
         private List<(int time, string name)> BestTimes;
         private string LastPlayer;
-        private int EmojisToGuess;
 
         internal void RecordBestTimes(int emojisToGuess, int tenthsOfSecondsElapsed, double top, double left)
         {
-            EmojisToGuess = emojisToGuess;
-            BestTimes = GetBestTimes(emojisToGuess);
+            PopulateBestTimes(emojisToGuess);
 
             if (BestTimes.Count < 5 || tenthsOfSecondsElapsed < BestTimes.Max(l => l.time))
             {
@@ -49,7 +47,7 @@ namespace Match
             }
         }
 
-        private List<(int, string)> GetBestTimes(int emojisToGuess)
+        private List<(int, string)> GetBestTimesFromFile(int emojisToGuess)
         {
             using FileStream fs = new(BestTimesFile, FileMode.OpenOrCreate, FileAccess.Read);
             using StreamReader sr = new(fs);
@@ -67,12 +65,11 @@ namespace Match
             return result;
         }
 
-        public string GetBestTimes()
+        public string GetBestTimes(int emojisToGuess)
         {
-            string result;
+            string result = $"Best times for {emojisToGuess * 2} emojis:";
             if (BestTimes.Count > 0)
             {
-                result = $"Best times for {EmojisToGuess * 2} emojis are:";
                 foreach ((int time, string name) in BestTimes.OrderBy(l => l.time).Take(5))
                 {
                     result += $"\n * {time / 10F:0.0s} by {name}";
@@ -80,10 +77,15 @@ namespace Match
             }
             else
             {
-                result = "No best times recorded!";
+                result += "\n * There are No times recorded!";
             }
 
             return result;
+        }
+
+        public void PopulateBestTimes(int emojisToGuess)
+        {
+            BestTimes = GetBestTimesFromFile(emojisToGuess);
         }
     }
 }

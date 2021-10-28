@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"
         mc:Ignorable="d"
-        Title="Find Matches!  ( To modify game, change width of window )" MinHeight="420" Height="420" MaxHeight="420" MinWidth="420" Width="585" MaxWidth="1066">
+        Title="Find Matches!  ( To modify game, change width of window )"
+        MinHeight="420" Height="420" MaxHeight="420" MinWidth="420" Width="585" MaxWidth="1066">
     <Grid x:Name="MainGrid" SizeChanged="MainGrid_SizeChanged">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width=".3*" />
