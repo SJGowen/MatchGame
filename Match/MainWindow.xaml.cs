@@ -1,6 +1,7 @@
 ﻿using Emoji.Wpf;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -10,6 +11,7 @@ namespace Match
 {
     public partial class MainWindow : Window
     {
+        private readonly string BestTimesSizeFile = "Match.ini";
         private int EmojisToGuess;
         private readonly MatchGuesser MatchGuesser = new();
 
@@ -46,6 +48,7 @@ namespace Match
 
             Delay.Interval = TimeSpan.FromSeconds(1);
             Delay.Tick += Delay_Tick;
+            Width = GetFormWidth();
         }
 
         private void Timer_Tick(object sender, EventArgs e)
@@ -59,7 +62,8 @@ namespace Match
                 TimeTextBlock.Text = $"Click - To Beat - {TenthsOfSecondsElapsed / 10F:0.0s}";
                 ResizeMode = ResizeMode.CanResize;
                 TimeRecorder.RecordBestTimes(EmojisToGuess, TenthsOfSecondsElapsed, Top, Left);
-                TimeTextBlock.ToolTip = TimeRecorder.GetBestTimes(EmojisToGuess);
+                TimeTextBlock.ToolTip = BestTimeTextBlock.ToolTip = TimeRecorder.GetBestTimes(EmojisToGuess);
+                BestTimeTextBlock.Text = TimeRecorder.GetBestTime(EmojisToGuess);
             }
         }
 
@@ -200,7 +204,8 @@ namespace Match
 
                     // Note use of EmojisToGuess with uppper case E, this is so new value is used
                     TimeRecorder.PopulateBestTimes(EmojisToGuess);
-                    TimeTextBlock.ToolTip = TimeRecorder.GetBestTimes(EmojisToGuess);
+                    TimeTextBlock.ToolTip = BestTimeTextBlock.ToolTip = TimeRecorder.GetBestTimes(EmojisToGuess);
+                    BestTimeTextBlock.Text = TimeRecorder.GetBestTime(EmojisToGuess);
                 }
             }
         }
@@ -219,6 +224,32 @@ namespace Match
                 < 1028 => 22,
                 _ => 24
             };
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            using FileStream fs = new(BestTimesSizeFile, FileMode.OpenOrCreate, FileAccess.Write);
+            using StreamWriter sw = new(fs);
+            sw.WriteLine($"MatchWindowWidth={(int)Width}");
+        }
+
+
+        public int GetFormWidth()
+        {
+            using FileStream fs = new(BestTimesSizeFile, FileMode.OpenOrCreate, FileAccess.Read);
+            using StreamReader sr = new(fs);
+            var str = sr.ReadLine();
+            while (!string.IsNullOrWhiteSpace(str))
+            {
+                if (str.StartsWith("MatchWindowWidth"))
+                {
+                    string[] bits = str.Split('=');
+                    return Convert.ToInt32(bits[1]);
+                }
+                str = sr.ReadLine();
+            }
+
+            return 585;
         }
     }
 }

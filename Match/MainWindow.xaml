@@ -1,12 +1,13 @@
 ﻿<Window x:Class="Match.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"
         mc:Ignorable="d"
-        Title="Find Matches!  ( To modify game, change width of window )"
-        MinHeight="420" Height="420" MaxHeight="420" MinWidth="420" Width="585" MaxWidth="1066">
+        Title="Find Matches! (Change width of window, to modify game)"
+        MinHeight="420" Height="420" MaxHeight="420" MinWidth="420" Width="585" MaxWidth="1066"
+        Closing="Window_Closing">
     <Grid x:Name="MainGrid" SizeChanged="MainGrid_SizeChanged">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width=".3*" />
@@ -30,7 +31,8 @@
             <RowDefinition />
             <RowDefinition />
             <RowDefinition />
-            <RowDefinition />
+            <RowDefinition Height=".45*" />
+            <RowDefinition Height=".7*"/>
         </Grid.RowDefinitions>
         <emoji:TextBlock Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="Emoji_MouseDown" Tag="0" />
         <emoji:TextBlock Grid.Column="1" Grid.Row="2" HorizontalAlignment="Center" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="Emoji_MouseDown" Tag="1" />
@@ -80,6 +82,7 @@
         <emoji:TextBlock Grid.Column="12" Grid.Row="2" HorizontalAlignment="Center" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="Emoji_MouseDown" Tag="45" />
         <emoji:TextBlock Grid.Column="12" Grid.Row="3" HorizontalAlignment="Center" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="Emoji_MouseDown" Tag="46" />
         <emoji:TextBlock Grid.Column="12" Grid.Row="4" HorizontalAlignment="Center" Text="❓" VerticalAlignment="Center" FontSize="36" MouseDown="Emoji_MouseDown" Tag="47" />
-        <emoji:TextBlock x:Name="TimeTextBlock" HorizontalAlignment="Center" Grid.Row="5" Text="To Start, Click ❓ Above" TextWrapping="Wrap" VerticalAlignment="Center" Grid.ColumnSpan="14" FontSize="36" MouseDown="TimeTextBlock_MouseDown" />
+        <emoji:TextBlock x:Name="BestTimeTextBlock" HorizontalAlignment="Center" Grid.Row="5" Text="Best Time for 99 emojis is 0.0s" TextWrapping="Wrap" VerticalAlignment="Center" Grid.ColumnSpan="14" FontSize="24" MouseDown="TimeTextBlock_MouseDown" />
+        <emoji:TextBlock x:Name="TimeTextBlock" HorizontalAlignment="Center" Grid.Row="6" Text="To Start, Click ❓ Above" TextWrapping="Wrap" VerticalAlignment="Center" Grid.ColumnSpan="14" FontSize="36" MouseDown="TimeTextBlock_MouseDown" />
     </Grid>
 </Window>

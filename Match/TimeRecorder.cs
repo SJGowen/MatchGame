@@ -77,7 +77,7 @@ namespace Match
             }
             else
             {
-                result += "\n * There are No times recorded!";
+                result += "\n * Best Time hasn't been recorded";
             }
 
             return result;
@@ -86,6 +86,13 @@ namespace Match
         public void PopulateBestTimes(int emojisToGuess)
         {
             BestTimes = GetBestTimesFromFile(emojisToGuess);
+        }
+
+        public string GetBestTime(int emojisToGuess)
+        {
+            return BestTimes.Count > 0
+                ? $"Best Time for {emojisToGuess * 2} emojis is {BestTimes.Min(l => l.time) / 10F:0.0s}"
+                : "Best Time hasn't been recorded";
         }
     }
 }
