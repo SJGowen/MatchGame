@@ -76,6 +76,7 @@ namespace Match
         {
             Timer.Stop();
             GameEmojis.Clear();
+            ResizeMode = ResizeMode.CanResize;
 
             // Select pairs of emojis to display from Emojis
             Random random = new();
@@ -138,7 +139,7 @@ namespace Match
             }
             else
             {
-                if (MatchesFound == EmojisToGuess)
+                if (!Timer.IsEnabled)
                 {
                     TimeTextBlock_MouseDown(sender, e);
                 }
