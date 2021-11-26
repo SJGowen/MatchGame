@@ -35,6 +35,7 @@ namespace Match
         private int TenthsOfSecondsElapsed;
         private int MatchesFound;
         private bool FindingMatch;
+        private bool GameOver;
         private readonly TimeRecorder TimeRecorder = new();
         private readonly string[] Args;
 
@@ -64,6 +65,7 @@ namespace Match
                 TimeRecorder.RecordBestTimes(EmojisToGuess, TenthsOfSecondsElapsed, Top, Left);
                 TimeTextBlock.ToolTip = BestTimeTextBlock.ToolTip = TimeRecorder.GetBestTimes(EmojisToGuess);
                 BestTimeTextBlock.Text = TimeRecorder.GetBestTime(EmojisToGuess);
+                GameOver = true;
             }
         }
 
@@ -106,13 +108,14 @@ namespace Match
             }
 
             FindingMatch = false;
+            GameOver = false;
             TimeTextBlock.Text = "To Start, Click ❓ Above";
         }
 
         private void Emoji_MouseDown(object sender, MouseButtonEventArgs e)
         {
             TextBlock cellClicked = sender as TextBlock;
-            if (cellClicked.Text == "❓")
+            if (!GameOver && cellClicked.Text == "❓")
             {
                 ProcessStart();
                 ProcessDelay();
