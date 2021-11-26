@@ -6,6 +6,8 @@ namespace Match
     {
         private TextBlock EmojiToFind { get; set; } = new();
         private TextBlock EmojiGuessed { get; set; } = new();
+        private readonly string QuestionMark = "❓";
+        private readonly string Tick = "✔";
 
         public void RecordToFind(TextBlock emojiToFind)
         {
@@ -22,13 +24,13 @@ namespace Match
         {
             if (EmojiToFind.Text != EmojiGuessed.Text)
             {
-                EmojiToFind.Text = "❓";
-                EmojiGuessed.Text = "❓";
+                EmojiToFind.Text = QuestionMark;
+                EmojiGuessed.Text = QuestionMark;
             }
             else if (showTicks)
             {
-                EmojiToFind.Text = "✔";
-                EmojiGuessed.Text = "✔";
+                EmojiToFind.Text = Tick;
+                EmojiGuessed.Text = Tick;
             }
         }
     }

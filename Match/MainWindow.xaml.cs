@@ -14,7 +14,7 @@ namespace Match
         private readonly string BestTimesSizeFile = "Match.ini";
         private int EmojisToGuess;
         private readonly MatchGuesser MatchGuesser = new();
-
+        private readonly string QuestionMark = "❓";
         private readonly List<string> Emojis = new()
         {
             "🌰", "🌱", "🌴", "🌵", "🌷", "🌸", "🌹", "🌺", "🌻", "🌼", "🌽", "🌾",
@@ -35,7 +35,25 @@ namespace Match
         private int TenthsOfSecondsElapsed;
         private int MatchesFound;
         private bool FindingMatch;
-        private bool GameOver;
+        private bool _gameOver;
+        private bool GameOver
+        {
+            get => _gameOver;
+            set
+            {
+                if (value)
+                {
+                    Timer.Stop();
+                    TimeTextBlock.Text = $"Click - To Beat - {TenthsOfSecondsElapsed / 10F:0.0s}";
+                    ResizeMode = ResizeMode.CanResize;
+                    TimeRecorder.RecordBestTimes(EmojisToGuess, TenthsOfSecondsElapsed, Top, Left);
+                    TimeTextBlock.ToolTip = BestTimeTextBlock.ToolTip = TimeRecorder.GetBestTimes(EmojisToGuess);
+                    BestTimeTextBlock.Text = TimeRecorder.GetBestTime(EmojisToGuess);
+                }
+                _gameOver = value;
+            }
+        }
+
         private readonly TimeRecorder TimeRecorder = new();
         private readonly string[] Args;
 
@@ -49,6 +67,7 @@ namespace Match
 
             Delay.Interval = TimeSpan.FromSeconds(1);
             Delay.Tick += Delay_Tick;
+
             Width = GetFormWidth();
         }
 
@@ -56,17 +75,7 @@ namespace Match
         {
             TenthsOfSecondsElapsed++;
             TimeTextBlock.Text = $"{TenthsOfSecondsElapsed / 10F:0.0s}";
-
-            if (MatchesFound == EmojisToGuess)
-            {
-                Timer.Stop();
-                TimeTextBlock.Text = $"Click - To Beat - {TenthsOfSecondsElapsed / 10F:0.0s}";
-                ResizeMode = ResizeMode.CanResize;
-                TimeRecorder.RecordBestTimes(EmojisToGuess, TenthsOfSecondsElapsed, Top, Left);
-                TimeTextBlock.ToolTip = BestTimeTextBlock.ToolTip = TimeRecorder.GetBestTimes(EmojisToGuess);
-                BestTimeTextBlock.Text = TimeRecorder.GetBestTime(EmojisToGuess);
-                GameOver = true;
-            }
+            GameOver = MatchesFound == EmojisToGuess;
         }
 
         private void Delay_Tick(object sender, EventArgs e)
@@ -80,9 +89,41 @@ namespace Match
             GameEmojis.Clear();
             ResizeMode = ResizeMode.CanResize;
 
-            // Select pairs of emojis to display from Emojis
-            Random random = new();
+            SetDisplayForAllTextBlocksWithNoName(QuestionMark);
+
             List<string> emojisToDisplay = new();
+            SelectEmojisToUse(emojisToDisplay);
+            PopulateGameEmojis(emojisToDisplay);
+
+            FindingMatch = false;
+            GameOver = false;
+            TimeTextBlock.Text = $"To Start, Click {QuestionMark} Above";
+        }
+
+        private void SetDisplayForAllTextBlocksWithNoName(string display)
+        {
+            // Make all emoji icons a ? -- Therefore if later you show hidden icons they are shown as ?'s
+            foreach (var textBlock in MainGrid.Children.OfType<TextBlock>().Where(x => x.Name == ""))
+            {
+                textBlock.Text = display;
+            }
+        }
+
+        private void PopulateGameEmojis(List<string> emojisToDisplay)
+        {
+            Random random = new();
+            // If the width of the Column is > 0 then it is in the new game so assign an emoji to it
+            foreach (var textBlock in MainGrid.Children.OfType<TextBlock>().Where(x => x.Name == "" && x.ActualWidth > 0))
+            {
+                int index = random.Next(emojisToDisplay.Count);
+                GameEmojis.Add(emojisToDisplay[index]);
+                emojisToDisplay.RemoveAt(index); // Remove used emoji so that it isn't chosen again
+            }
+        }
+
+        private void SelectEmojisToUse(List<string> emojisToDisplay)
+        {
+            Random random = new();
             while (emojisToDisplay.Count < EmojisToGuess * 2)
             {
                 var character = random.Next(Emojis.Count);
@@ -92,30 +133,12 @@ namespace Match
                     emojisToDisplay.Add(Emojis[character]);
                 }
             }
-
-            // Make all emoji icons a ? -- Therefore if later you show hidden icons they are shown as ?'s
-            foreach (var textBlock in MainGrid.Children.OfType<TextBlock>().Where(x => x.Name == ""))
-            {
-                textBlock.Text = "❓";
-            }
-
-            // If the width of the Column is > 0 then it is in the new game so assign an emoji to it
-            foreach (var textBlock in MainGrid.Children.OfType<TextBlock>().Where(x => x.Name == "" && x.ActualWidth > 0))
-            {
-                int index = random.Next(emojisToDisplay.Count);
-                GameEmojis.Add(emojisToDisplay[index]);
-                emojisToDisplay.RemoveAt(index); // Remove used emoji so that it isn't chosen again
-            }
-
-            FindingMatch = false;
-            GameOver = false;
-            TimeTextBlock.Text = "To Start, Click ❓ Above";
         }
 
         private void Emoji_MouseDown(object sender, MouseButtonEventArgs e)
         {
             TextBlock cellClicked = sender as TextBlock;
-            if (!GameOver && cellClicked.Text == "❓")
+            if (!GameOver && cellClicked.Text == QuestionMark)
             {
                 ProcessStart();
                 ProcessDelay();
@@ -140,12 +163,9 @@ namespace Match
 
                 FindingMatch = !FindingMatch;
             }
-            else
+            else if (!Timer.IsEnabled)
             {
-                if (!Timer.IsEnabled)
-                {
-                    TimeTextBlock_MouseDown(sender, e);
-                }
+                TimeTextBlock_MouseDown(sender, e);
             }
         }
 
