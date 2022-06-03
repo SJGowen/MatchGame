@@ -12,12 +12,13 @@ namespace Match
         private readonly string BestTimesFile = "BestTimes.txt";
         private List<(int time, string name)> BestTimes;
         private string LastPlayer;
+        private int BestTimesToRecord = 5;
 
         internal void RecordBestTimes(int emojisToGuess, int tenthsOfSecondsElapsed, double top, double left)
         {
-            PopulateBestTimes(emojisToGuess);
+            ReadBestTimesFromFile(emojisToGuess);
 
-            if (BestTimes.Count < 5 || tenthsOfSecondsElapsed < BestTimes.Max(l => l.time))
+            if (BestTimes.Count < BestTimesToRecord || tenthsOfSecondsElapsed < BestTimes.Max(l => l.time))
             {
                 StringGetter name = new("You have finished in a Best Time", "Please enter your name:",
                     !string.IsNullOrWhiteSpace(LastPlayer) ? LastPlayer : "Anonymous", top, left);
@@ -41,7 +42,7 @@ namespace Match
 
             using FileStream fs = new(BestTimesFile, FileMode.Append, FileAccess.Write);
             using StreamWriter sw = new(fs);
-            foreach ((int bestTime, string byWho) in bestTimes.OrderBy(l => l.time).Take(5))
+            foreach ((int bestTime, string byWho) in bestTimes.OrderBy(l => l.time).Take(BestTimesToRecord))
             {
                 sw.WriteLine($"Emojis={emojisToGuess}|{bestTime}|{byWho}");
             }
@@ -70,7 +71,7 @@ namespace Match
             string result = $"Best times for {emojisToGuess * 2} emojis:";
             if (BestTimes.Count > 0)
             {
-                foreach ((int time, string name) in BestTimes.OrderBy(l => l.time).Take(5))
+                foreach ((int time, string name) in BestTimes.OrderBy(l => l.time).Take(BestTimesToRecord))
                 {
                     result += $"\n * {time / 10F:0.0s} by {name}";
                 }
@@ -83,7 +84,7 @@ namespace Match
             return result;
         }
 
-        public void PopulateBestTimes(int emojisToGuess)
+        public void ReadBestTimesFromFile(int emojisToGuess)
         {
             BestTimes = GetBestTimesFromFile(emojisToGuess);
         }

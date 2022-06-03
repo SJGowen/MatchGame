@@ -35,24 +35,7 @@ namespace Match
         private int TenthsOfSecondsElapsed;
         private int MatchesFound;
         private bool FindingMatch;
-        private bool _gameOver;
-        private bool GameOver
-        {
-            get => _gameOver;
-            set
-            {
-                if (value)
-                {
-                    Timer.Stop();
-                    TimeTextBlock.Text = $"Click - To Beat - {TenthsOfSecondsElapsed / 10F:0.0s}";
-                    ResizeMode = ResizeMode.CanResize;
-                    TimeRecorder.RecordBestTimes(EmojisToGuess, TenthsOfSecondsElapsed, Top, Left);
-                    TimeTextBlock.ToolTip = BestTimeTextBlock.ToolTip = TimeRecorder.GetBestTimes(EmojisToGuess);
-                    BestTimeTextBlock.Text = TimeRecorder.GetBestTime(EmojisToGuess);
-                }
-                _gameOver = value;
-            }
-        }
+        private bool GameOver;
 
         private readonly TimeRecorder TimeRecorder = new();
         private readonly string[] Args;
@@ -71,11 +54,34 @@ namespace Match
             Width = GetFormWidth();
         }
 
+        private void SetGameOver(bool gameOver)
+        {
+            ResizeMode = gameOver ? ResizeMode.CanResize : ResizeMode.NoResize;
+            if (!GameOver && gameOver && (MatchesFound == EmojisToGuess))
+            {
+                TimeRecorder.RecordBestTimes(EmojisToGuess, TenthsOfSecondsElapsed, Top, Left);
+                TimeTextBlock.ToolTip = BestTimeTextBlock.ToolTip = TimeRecorder.GetBestTimes(EmojisToGuess);
+                BestTimeTextBlock.Text = TimeRecorder.GetBestTime(EmojisToGuess);
+            }
+            TenthsOfSecondsElapsed = 0;
+            MatchesFound = 0;
+            GameOver = gameOver;
+        }
+
         private void Timer_Tick(object sender, EventArgs e)
         {
             TenthsOfSecondsElapsed++;
-            TimeTextBlock.Text = $"{TenthsOfSecondsElapsed / 10F:0.0s}";
-            GameOver = MatchesFound == EmojisToGuess;
+            var elaspedTime = $"{TenthsOfSecondsElapsed / 10F:0.0s}";
+            if (MatchesFound == EmojisToGuess)
+            {
+                Timer.Stop();
+                TimeTextBlock.Text = $"Click - To Beat - {elaspedTime}";
+                SetGameOver(true);
+            }
+            else
+            {
+                TimeTextBlock.Text = elaspedTime;
+            }
         }
 
         private void Delay_Tick(object sender, EventArgs e)
@@ -87,7 +93,7 @@ namespace Match
         {
             Timer.Stop();
             GameEmojis.Clear();
-            ResizeMode = ResizeMode.CanResize;
+            SetGameOver(true);
 
             SetDisplayForAllTextBlocksWithNoName(QuestionMark);
 
@@ -178,9 +184,7 @@ namespace Match
                     SetUpGame();
                 }
 
-                ResizeMode = ResizeMode.NoResize;
-                TenthsOfSecondsElapsed = 0;
-                MatchesFound = 0;
+                SetGameOver(false);
                 Timer.Start();
             }
         }
@@ -227,7 +231,7 @@ namespace Match
                     }
 
                     // Note use of EmojisToGuess with uppper case E, this is so new value is used
-                    TimeRecorder.PopulateBestTimes(EmojisToGuess);
+                    TimeRecorder.ReadBestTimesFromFile(EmojisToGuess);
                     TimeTextBlock.ToolTip = BestTimeTextBlock.ToolTip = TimeRecorder.GetBestTimes(EmojisToGuess);
                     BestTimeTextBlock.Text = TimeRecorder.GetBestTime(EmojisToGuess);
                 }
