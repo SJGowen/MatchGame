@@ -89,7 +89,7 @@ namespace Match
             BestTimes = GetBestTimesFromFile(emojisToGuess);
         }
 
-        public string GetBestTime(int emojisToGuess)
+        public string GeMinimumTime(int emojisToGuess)
         {
             return BestTimes.Count > 0
                 ? $"Best Time for {emojisToGuess * 2} emojis is {BestTimes.Min(l => l.time) / 10F:0.0s}"

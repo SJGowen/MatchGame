@@ -61,7 +61,7 @@ namespace Match
             {
                 TimeRecorder.RecordBestTimes(EmojisToGuess, TenthsOfSecondsElapsed, Top, Left);
                 TimeTextBlock.ToolTip = BestTimeTextBlock.ToolTip = TimeRecorder.GetBestTimes(EmojisToGuess);
-                BestTimeTextBlock.Text = TimeRecorder.GetBestTime(EmojisToGuess);
+                BestTimeTextBlock.Text = TimeRecorder.GeMinimumTime(EmojisToGuess);
             }
             TenthsOfSecondsElapsed = 0;
             MatchesFound = 0;
@@ -233,7 +233,7 @@ namespace Match
                     // Note use of EmojisToGuess with uppper case E, this is so new value is used
                     TimeRecorder.ReadBestTimesFromFile(EmojisToGuess);
                     TimeTextBlock.ToolTip = BestTimeTextBlock.ToolTip = TimeRecorder.GetBestTimes(EmojisToGuess);
-                    BestTimeTextBlock.Text = TimeRecorder.GetBestTime(EmojisToGuess);
+                    BestTimeTextBlock.Text = TimeRecorder.GeMinimumTime(EmojisToGuess);
                 }
             }
         }
