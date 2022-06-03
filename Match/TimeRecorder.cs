@@ -12,7 +12,7 @@ namespace Match
         private readonly string BestTimesFile = "BestTimes.txt";
         private List<(int time, string name)> BestTimes;
         private string LastPlayer;
-        private int BestTimesToRecord = 5;
+        private readonly int BestTimesToRecord = 5;
 
         internal void RecordBestTimes(int emojisToGuess, int tenthsOfSecondsElapsed, double top, double left)
         {

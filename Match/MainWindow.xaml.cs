@@ -1,11 +1,11 @@
-﻿using Emoji.Wpf;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Emoji.Wpf;
 
 namespace Match
 {
@@ -39,6 +39,8 @@ namespace Match
 
         private readonly TimeRecorder TimeRecorder = new();
         private readonly string[] Args;
+
+        private string EmojiTime = "";
 
         public MainWindow()
         {
@@ -75,7 +77,8 @@ namespace Match
             if (MatchesFound == EmojisToGuess)
             {
                 Timer.Stop();
-                TimeTextBlock.Text = $"Click - To Beat - {elaspedTime}";
+                TimeTextBlock.Text = $"{EmojisToGuess * 2} Emojis = {elaspedTime}";
+                EmojiTime = $"{EmojisToGuess * 2}|{TimeTextBlock.Text}";
                 SetGameOver(true);
             }
             else
@@ -234,6 +237,20 @@ namespace Match
                     TimeRecorder.ReadBestTimesFromFile(EmojisToGuess);
                     TimeTextBlock.ToolTip = BestTimeTextBlock.ToolTip = TimeRecorder.GetBestTimes(EmojisToGuess);
                     BestTimeTextBlock.Text = TimeRecorder.GeMinimumTime(EmojisToGuess);
+
+                    TimeTextBlock.Text = $"To Start, Click {QuestionMark} Above";
+                    if (!string.IsNullOrEmpty(EmojiTime))
+                    {
+                        string[] bits = EmojiTime.Split('|');
+                        if (int.TryParse(bits[0], out var emojisLastPlayed))
+                        {
+                            if (emojisLastPlayed == EmojisToGuess * 2)
+                            {
+                                TimeTextBlock.Text = bits[1];
+
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -271,7 +288,7 @@ namespace Match
             {
                 if (str.StartsWith("MatchWindowWidth"))
                 {
-                    string[] bits = str.Split('=');
+                    var bits = str.Split('=');
                     return Convert.ToInt32(bits[1]);
                 }
                 str = sr.ReadLine();
