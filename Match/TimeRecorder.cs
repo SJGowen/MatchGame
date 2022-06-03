@@ -20,7 +20,7 @@ namespace Match
 
             if (BestTimes.Count < BestTimesToRecord || tenthsOfSecondsElapsed < BestTimes.Max(l => l.time))
             {
-                StringGetter name = new("You have finished in a Best Time", "Please enter your name:",
+                StringGetter name = new($"You have finished in {tenthsOfSecondsElapsed / 10F:0.0s}", "Please enter your name:",
                     !string.IsNullOrWhiteSpace(LastPlayer) ? LastPlayer : "Anonymous", top, left);
 
                 if (name.ShowDialog() == true)

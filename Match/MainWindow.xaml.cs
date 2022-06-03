@@ -41,7 +41,7 @@ namespace Match
         private readonly TimeRecorder TimeRecorder = new();
         private readonly string[] Args;
 
-        private string EmojiTime = "";
+        private (int EmojiCount, string CompletionTime) EmojiTime = (0, "");
 
         public MainWindow()
         {
@@ -79,7 +79,7 @@ namespace Match
             {
                 Timer.Stop();
                 TimeTextBlock.Text = $"{EmojisToGuess * 2} Emojis = {elaspedTime}";
-                EmojiTime = $"{EmojisToGuess * 2}|{TimeTextBlock.Text}";
+                EmojiTime = (EmojisToGuess * 2, TimeTextBlock.Text);
                 SetGameOver(true);
             }
             else
@@ -97,7 +97,7 @@ namespace Match
         {
             Timer.Stop();
             GameEmojis.Clear();
-            EmojiTime = "";
+            EmojiTime = (0, "");
             SetGameOver(true);
 
             SetDisplayForAllTextBlocksWithNoName(QuestionMark);
@@ -113,7 +113,6 @@ namespace Match
 
         private void SetDisplayForAllTextBlocksWithNoName(string display)
         {
-            // Make all emoji icons a ? -- Therefore if later you show hidden icons they are shown as ?'s
             foreach (var textBlock in MainGrid.Children.OfType<TextBlock>().Where(x => x.Name == ""))
             {
                 textBlock.Text = display;
@@ -153,7 +152,7 @@ namespace Match
             {
                 ProcessStart();
             }
-            if (!GameOver)
+            if (!GameOver && cellClicked.Text == QuestionMark)
             {
                 ProcessDelay();
 
@@ -242,7 +241,7 @@ namespace Match
                     TimeRecorder.ReadBestTimesFromFile(EmojisToGuess);
                     TimeTextBlock.ToolTip = BestTimeTextBlock.ToolTip = TimeRecorder.GetBestTimes(EmojisToGuess);
                     BestTimeTextBlock.Text = TimeRecorder.GeMinimumTime(EmojisToGuess);
-
+                    TimeTextBlock.Text = $"To Start, Click {QuestionMark} Above";
                     ChangeDispayTextAndIcons();
                 }
             }
@@ -250,35 +249,27 @@ namespace Match
 
         private void ChangeDispayTextAndIcons()
         {
-            TimeTextBlock.Text = $"To Start, Click {QuestionMark} Above";
-            if (!string.IsNullOrEmpty(EmojiTime))
+            if (EmojiTime.EmojiCount == EmojisToGuess * 2)
             {
-                string[] bits = EmojiTime.Split('|');
-                if (int.TryParse(bits[0], out var emojisLastPlayed))
-                {
-                    if (emojisLastPlayed == EmojisToGuess * 2)
-                    {
-                        TimeTextBlock.Text = bits[1];
+                TimeTextBlock.Text = EmojiTime.CompletionTime;
 
-                        var i = 0;
-                        if (string.Equals(Args[1], "ShowTicks", StringComparison.OrdinalIgnoreCase))
-                        {
-                            SetDisplayForAllTextBlocksWithNoName(Tick);
-                        }
-                        else
-                        {
-                            foreach (var textBlock in MainGrid.Children.OfType<TextBlock>().Take(EmojisToGuess * 2))
-                            {
-                                textBlock.Text = GameEmojis[i];
-                                i++;
-                            }
-                        }
-                    }
-                    else
+                if (Args.Length > 1 && string.Equals(Args[1], "ShowTicks", StringComparison.OrdinalIgnoreCase))
+                {
+                    SetDisplayForAllTextBlocksWithNoName(Tick);
+                }
+                else
+                {
+                    var i = 0;
+                    foreach (var textBlock in MainGrid.Children.OfType<TextBlock>().Take(EmojiTime.EmojiCount))
                     {
-                        SetDisplayForAllTextBlocksWithNoName(QuestionMark);
+                        textBlock.Text = GameEmojis[i];
+                        i++;
                     }
                 }
+            }
+            else
+            {
+                SetDisplayForAllTextBlocksWithNoName(QuestionMark);
             }
         }
 
