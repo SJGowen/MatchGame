@@ -248,6 +248,16 @@ namespace Match
                             {
                                 TimeTextBlock.Text = bits[1];
 
+                                var i = 0;
+                                foreach (var textBlock in MainGrid.Children.OfType<TextBlock>().Take(EmojisToGuess * 2))
+                                {
+                                    textBlock.Text = GameEmojis[i];
+                                    i++;
+                                }
+                            }
+                            else
+                            {
+                                SetDisplayForAllTextBlocksWithNoName(QuestionMark);
                             }
                         }
                     }
