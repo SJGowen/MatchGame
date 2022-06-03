@@ -15,6 +15,7 @@ namespace Match
         private int EmojisToGuess;
         private readonly MatchGuesser MatchGuesser = new();
         private readonly string QuestionMark = "❓";
+        private readonly string Tick = "✔";
         private readonly List<string> Emojis = new()
         {
             "🌰", "🌱", "🌴", "🌵", "🌷", "🌸", "🌹", "🌺", "🌻", "🌼", "🌽", "🌾",
@@ -96,6 +97,7 @@ namespace Match
         {
             Timer.Stop();
             GameEmojis.Clear();
+            EmojiTime = "";
             SetGameOver(true);
 
             SetDisplayForAllTextBlocksWithNoName(QuestionMark);
@@ -147,9 +149,12 @@ namespace Match
         private void Emoji_MouseDown(object sender, MouseButtonEventArgs e)
         {
             TextBlock cellClicked = sender as TextBlock;
-            if (!GameOver && cellClicked.Text == QuestionMark)
+            if (cellClicked.Text == QuestionMark)
             {
                 ProcessStart();
+            }
+            if (!GameOver)
+            {
                 ProcessDelay();
 
                 var pos = int.Parse(cellClicked.Tag.ToString());
@@ -238,28 +243,40 @@ namespace Match
                     TimeTextBlock.ToolTip = BestTimeTextBlock.ToolTip = TimeRecorder.GetBestTimes(EmojisToGuess);
                     BestTimeTextBlock.Text = TimeRecorder.GeMinimumTime(EmojisToGuess);
 
-                    TimeTextBlock.Text = $"To Start, Click {QuestionMark} Above";
-                    if (!string.IsNullOrEmpty(EmojiTime))
-                    {
-                        string[] bits = EmojiTime.Split('|');
-                        if (int.TryParse(bits[0], out var emojisLastPlayed))
-                        {
-                            if (emojisLastPlayed == EmojisToGuess * 2)
-                            {
-                                TimeTextBlock.Text = bits[1];
+                    ChangeDispayTextAndIcons();
+                }
+            }
+        }
 
-                                var i = 0;
-                                foreach (var textBlock in MainGrid.Children.OfType<TextBlock>().Take(EmojisToGuess * 2))
-                                {
-                                    textBlock.Text = GameEmojis[i];
-                                    i++;
-                                }
-                            }
-                            else
+        private void ChangeDispayTextAndIcons()
+        {
+            TimeTextBlock.Text = $"To Start, Click {QuestionMark} Above";
+            if (!string.IsNullOrEmpty(EmojiTime))
+            {
+                string[] bits = EmojiTime.Split('|');
+                if (int.TryParse(bits[0], out var emojisLastPlayed))
+                {
+                    if (emojisLastPlayed == EmojisToGuess * 2)
+                    {
+                        TimeTextBlock.Text = bits[1];
+
+                        var i = 0;
+                        if (string.Equals(Args[1], "ShowTicks", StringComparison.OrdinalIgnoreCase))
+                        {
+                            SetDisplayForAllTextBlocksWithNoName(Tick);
+                        }
+                        else
+                        {
+                            foreach (var textBlock in MainGrid.Children.OfType<TextBlock>().Take(EmojisToGuess * 2))
                             {
-                                SetDisplayForAllTextBlocksWithNoName(QuestionMark);
+                                textBlock.Text = GameEmojis[i];
+                                i++;
                             }
                         }
+                    }
+                    else
+                    {
+                        SetDisplayForAllTextBlocksWithNoName(QuestionMark);
                     }
                 }
             }
@@ -285,7 +302,7 @@ namespace Match
         {
             using FileStream fs = new(BestTimesSizeFile, FileMode.OpenOrCreate, FileAccess.Write);
             using StreamWriter sw = new(fs);
-            sw.WriteLine($"MatchWindowWidth={(int)Width}");
+            sw.WriteLine($"WindowWidth={(int)Width}");
         }
 
 
@@ -296,7 +313,7 @@ namespace Match
             var str = sr.ReadLine();
             while (!string.IsNullOrWhiteSpace(str))
             {
-                if (str.StartsWith("MatchWindowWidth"))
+                if (str.StartsWith("WindowWidth"))
                 {
                     var bits = str.Split('=');
                     return Convert.ToInt32(bits[1]);
