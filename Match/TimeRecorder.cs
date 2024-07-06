@@ -78,7 +78,7 @@ namespace Match
             }
             else
             {
-                result += "\n * Best Time hasn't been recorded";
+                result += "\n * No best time has been recorded";
             }
 
             return result;
@@ -92,8 +92,8 @@ namespace Match
         public string GeMinimumTime(int emojisToGuess)
         {
             return BestTimes.Count > 0
-                ? $"Best Time for {emojisToGuess * 2} emojis is {BestTimes.Min(l => l.time) / 10F:0.0s}"
-                : "Best Time hasn't been recorded";
+                ? $"Best time for {emojisToGuess * 2} emojis is {BestTimes.Min(l => l.time) / 10F:0.0s}"
+                : "No best time has been recorded";
         }
     }
 }
